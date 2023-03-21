@@ -3,9 +3,9 @@ import shutil
 
 
 class __TreeNode(object):
-    def __init__(self, lvl):
+    def __init__(self, lv):
         super().__init__()
-        self.lvl = lvl
+        self.lv = lv
         self.children = []
 
 
@@ -14,8 +14,8 @@ class __JointNode(__TreeNode):
 
 
 class __DirNode(__TreeNode):
-    def __init__(self, lvl, dirname):
-        super().__init__(lvl)
+    def __init__(self, lv, dirname):
+        super().__init__(lv)
         self.dirname = dirname
 
 
@@ -27,24 +27,24 @@ def __parse_dirnames(tree_cnf):
     if len(dirnames) == 0:
         return
 
-    lvl1_dirname = dirnames[0]
-    prefix = lvl1_dirname[0:len(lvl1_dirname) - len(lvl1_dirname.lstrip())]
+    lv1_dirname = dirnames[0]
+    prefix = lv1_dirname[0:len(lv1_dirname) - len(lv1_dirname.lstrip())]
     dirnames = map(lambda v: v[len(prefix):]
                    if v.startswith(prefix) else v, dirnames)
     return list(dirnames)
 
 
-def __build_tree(dirnames, lvl_indent):
+def __build_tree(dirnames, lv_indent):
     root_node = __DirNode(0, '')
     node_stack = [root_node]
 
     for dirname in dirnames:
-        lvl = len(dirname.split(lvl_indent))
+        lv = len(dirname.split(lv_indent))
 
         # find parent directory
         current_node = node_stack[-1]
         while True:
-            if lvl == current_node.lvl + 1:
+            if lv == current_node.lv + 1:
                 break
             else:
                 node_stack.pop()
@@ -54,13 +54,13 @@ def __build_tree(dirnames, lvl_indent):
         for d in dirname.split('->'):
             siblings = d.split(',')
             if len(siblings) == 1:
-                sibling_node = __DirNode(lvl, siblings[0].strip())
+                sibling_node = __DirNode(lv, siblings[0].strip())
                 current_node.children.append(sibling_node)
                 current_node = sibling_node
             else:
-                joint_node = __JointNode(lvl)
+                joint_node = __JointNode(lv)
                 for s in siblings:
-                    sibling_node = __DirNode(lvl, s.strip())
+                    sibling_node = __DirNode(lv, s.strip())
                     sibling_node.children.append(joint_node)
                     current_node.children.append(sibling_node)
                 current_node = joint_node
@@ -83,7 +83,7 @@ def __generate_tree(parent_dir, tree_node):
             __generate_tree(parent_dir, child)
 
 
-def generate_dirtree(root_dir, tree_cnf, lvl_indent='    '):
+def generate_dirtree(root_dir, tree_cnf, lv_indent='    '):
     '''Generate directory tree from config.
 
     Attributes
@@ -97,7 +97,7 @@ def generate_dirtree(root_dir, tree_cnf, lvl_indent='    '):
         ,     : define sibling directory
         ->    : define different directory level
 
-    lvl_indent: str
+    lv_indent: str
         Indent used for determine level of directory. 
         Default '    ' (4 whitespace).
 
@@ -122,5 +122,5 @@ def generate_dirtree(root_dir, tree_cnf, lvl_indent='    '):
         os.makedirs(root_dir)
 
     dirnames = __parse_dirnames(tree_cnf)
-    root_node = __build_tree(dirnames, lvl_indent)
+    root_node = __build_tree(dirnames, lv_indent)
     __generate_tree(root_dir, root_node)
