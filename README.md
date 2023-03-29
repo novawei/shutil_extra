@@ -23,5 +23,16 @@ folder1
         folder3_3->folder4
         folder3_4->folder4
 '''
+
+# without post_handle
 generate_dirtree('./folder_tree', tree_cnf)
+
+# with post_handle
+def post_handle(dirname, dirpath):
+    # do something after dir generated
+    if dirname == 'folder4':
+        with open(os.path.join(dirpath, 'data.txt'), 'w') as f:
+            f.writelines('hello world')
+
+generate_dirtree('./folder_tree', tree_cnf, post_handle=post_handle)
 ```
