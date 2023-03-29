@@ -13,7 +13,7 @@ twine upload ./dist/shutil_extra-x.x.x.tar.gz
 
 ## dirtree
 ```python
-from shutil_extra.dirtree import generate_dirtree
+from shutil_extra import dirtree
 
 tree_cnf = f'''
 folder1
@@ -25,7 +25,7 @@ folder1
 '''
 
 # without post_handle
-generate_dirtree('./folder_tree', tree_cnf)
+dirtree.makedirs('./folder_tree', tree_cnf)
 
 # with post_handle
 def post_handle(dirname, dirpath):
@@ -34,5 +34,5 @@ def post_handle(dirname, dirpath):
         with open(os.path.join(dirpath, 'data.txt'), 'w') as f:
             f.writelines('hello world')
 
-generate_dirtree('./folder_tree', tree_cnf, post_handle=post_handle)
+dirtree.makedirs('./folder_tree', tree_cnf, post_handle=post_handle)
 ```
