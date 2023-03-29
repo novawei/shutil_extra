@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name = "shutil_extra",
-    version = "0.0.2",
+    version = "0.0.3",
     keywords = ("pip", "shutil extra", "dir tree"),
     description = "A successful sign for python setup",
     long_description_content_type = 'text/markdown',

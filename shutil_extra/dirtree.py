@@ -69,21 +69,26 @@ def __build_tree(dirnames, lv_indent):
     return root_node
 
 
-def __generate_tree(parent_dir, tree_node):
+def __generate_tree(parent_dir, tree_node, post_handle):
     if isinstance(tree_node, __DirNode):
         if len(tree_node.dirname) > 0:
             dirpath = os.path.join(parent_dir, tree_node.dirname)
             if not os.path.exists(dirpath):
                 os.makedirs(dirpath)
+                # run post_handle if exists, do something after dir generated
+                if post_handle is not None:
+                    post_handle(tree_node.dirname, dirpath)
             # change parent_dir to current tree_node's dirpath
+            # child directories of this tree_node will generated in dirpath
             parent_dir = dirpath
+
     # recursive generate child nodes
     if len(tree_node.children) > 0:
         for child in tree_node.children:
-            __generate_tree(parent_dir, child)
+            __generate_tree(parent_dir, child, post_handle)
 
 
-def generate_dirtree(root_dir, tree_cnf, lv_indent='    '):
+def generate_dirtree(root_dir, tree_cnf, lv_indent='    ', post_handle=None):
     '''Generate directory tree from config.
 
     Attributes
@@ -100,6 +105,12 @@ def generate_dirtree(root_dir, tree_cnf, lv_indent='    '):
     lv_indent: str
         Indent used for determine level of directory. 
         Default '    ' (4 whitespace).
+
+    post_handle: func
+        run handle function after directory generated, with params (dirname, dirpath).
+
+        def on_generate_dir(dirname, dirpath):
+            # do something...
 
     Examples
     --------
@@ -123,4 +134,4 @@ def generate_dirtree(root_dir, tree_cnf, lv_indent='    '):
 
     dirnames = __parse_dirnames(tree_cnf)
     root_node = __build_tree(dirnames, lv_indent)
-    __generate_tree(root_dir, root_node)
+    __generate_tree(root_dir, root_node, post_handle)

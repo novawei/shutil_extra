@@ -1,6 +1,14 @@
 # shutil_extra
 extra utils
 
+# Build/Upload
+```sh
+# build
+python setup.py sdist
+# upload
+twine upload ./dist/shutil_extra-x.x.x.tar.gz
+```
+
 # Usage
 
 ## dirtree
